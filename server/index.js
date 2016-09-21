@@ -23,9 +23,11 @@ const createPoint = (pointInfo, trackInfo) => Object.assign(
 // With every request we pass different coordinates
 let reqNo = 0;
 app.get('/routes', (req, res) => {
-  const frameNo = goAround(tracks[0].length - 1, reqNo++);
-
-  const points = mapPoints.map((point, idx) => createPoint(point, tracks[idx][frameNo]));
+  reqNo++;
+  const points = mapPoints.map((point, idx) => {
+    const frameNo = goAround(tracks[0].length - 1, reqNo + idx);
+    return createPoint(point, tracks[idx][frameNo]);
+  });
   const response = { points };
 
   res.header('Access-Control-Allow-Origin', '*');

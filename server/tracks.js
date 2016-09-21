@@ -2,7 +2,7 @@ const iconMaker = require('./iconMaker');
 
 
 const mapPoints = [
-  // { id: 1, name: 'John', icon: 'http://pixeljoint.com/files/icons/car__r1350137971.gif' },
+  { id: 1, name: 'John', icon: 'http://pixeljoint.com/files/icons/car__r1350137971.gif' },
   // { id: 4, name: 'Mark', icon: 'http://pixeljoint.com/files/icons/mini_car.gif' },
   { id: 2, name: 'Karl', icon: iconMaker('Karl') },
   { id: 3, name: 'Peter', icon: iconMaker('Peter') },
@@ -22,6 +22,13 @@ const tracks = [
     [51.471597, -0.205609],
     [51.472318, -0.202247],
     [51.472318, -0.202247],
+  ],
+  [
+    [51.472381, -0.203807],
+    [51.474217, -0.206557],
+    [51.475747, -0.208799],
+    [51.477003, -0.209700],
+    [51.479449, -0.211706],
   ],
 ];
 
