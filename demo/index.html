@@ -42,7 +42,7 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKdTnpxORlxfcVsuASHCeozz1CCMLM0u4"></script>
 <script>
     function getNewCoordinates() {
-      return fetch('http://192.168.100.65:8080/routes', {mode: 'cors'}).then(r => r.json())
+      return fetch('http://localhost:8080/routes', {mode: 'cors'}).then(r => r.json())
     }
 
 
