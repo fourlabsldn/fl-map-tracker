@@ -1,11 +1,12 @@
-const iconMaker = require('./iconMaker');
+const personMarker = require('./personMarker');
+const vanMarker = require('./vanMarker');
 
 
 const mapPoints = [
-  { id: 1, name: 'John', icon: 'http://pixeljoint.com/files/icons/car__r1350137971.gif' },
+  { id: 1, name: 'John', icon: personMarker('John') },
   // { id: 4, name: 'Mark', icon: 'http://pixeljoint.com/files/icons/mini_car.gif' },
-  { id: 2, name: 'Karl', icon: iconMaker('Karl') },
-  { id: 3, name: 'Peter', icon: iconMaker('Peter') },
+  { id: 2, name: 'Karl', icon: vanMarker('Karl') },
+  { id: 3, name: 'Peter', icon: vanMarker('Peter') },
 ];
 
 const tracks = [
