@@ -13,12 +13,45 @@
       paths: {
         'lodash/fp': 'https://cdnjs.cloudflare.com/ajax/libs/lodash-fp/0.10.4/lodash-fp.min',
         'fl-google-maps-driver': './lib/index',
+        'fl-map-tracker': '../dest/index'
       },
     });
   </script>
 </head>
 <body>
   <h1>Golden Eagle Tracking</h1>
+  <div id="map"></div>
 
+
+<script>
+    function getNewCoordinates() {
+      return fetch('http://localhost:8080/routes', {mode: 'cors'}).then(r => r.json())
+    }
+
+
+  require(
+    ['fl-google-maps-driver', 'fl-map-tracker', 'lodash/fp'],
+    function (MapDriver, mapTracker, _) {
+      // Create map
+      mapDriver = new MapDriver(google, '#map', { center: { lat: 51.473663, lng: -0.203287 }});
+      let points = [];
+
+      getNewCoordinates
+        .then(_.get('points'))
+        .then(mapTracker.comparePoints(points))
+        .then(function ({ pointsToMove, pointsToCreate, pointsToDelete }) {
+          // move markers
+          pointsToMove.forEach(p => mapDriver.moveMarker(p.marker, p.position));
+
+          const newPoints = pointsToCreate.map(mapTracker.addMarker(mapDriver)) // add marker to point
+          points = points.concat(newPoints);
+
+          pointsToDelete.forEach(p => {
+            points = mapTracker.withoutPoint(mapDriver, points);
+          });
+         });
+    }
+  );
+</script>
 </body>
 </html>
