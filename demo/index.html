@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <title>Golden Eagle Tracking</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body{
+      display: flex;
+      flex-flow: column nowrap;
+      width: 100vw;
+      height: 100vh;
+      background-color: f0f0f0;
+      text-align: center;
+    }
+
+    #map {
+      width: 500px;
+      height: 500px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px #999;
+    }
+  </style>
 
   <!-- RequireJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
@@ -12,7 +29,7 @@
       baseUrl: './',
       paths: {
         'lodash/fp': 'https://cdnjs.cloudflare.com/ajax/libs/lodash-fp/0.10.4/lodash-fp.min',
-        'fl-google-maps-driver': './lib/index',
+        'fl-google-maps-driver': './lib/fl-google-maps-driver',
         'fl-map-tracker': '../dest/index'
       },
     });
@@ -22,7 +39,7 @@
   <h1>Golden Eagle Tracking</h1>
   <div id="map"></div>
 
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKdTnpxORlxfcVsuASHCeozz1CCMLM0u4"></script>
 <script>
     function getNewCoordinates() {
       return fetch('http://localhost:8080/routes', {mode: 'cors'}).then(r => r.json())
@@ -33,15 +50,16 @@
     ['fl-google-maps-driver', 'fl-map-tracker', 'lodash/fp'],
     function (MapDriver, mapTracker, _) {
       // Create map
-      mapDriver = new MapDriver(google, '#map', { center: { lat: 51.473663, lng: -0.203287 }});
+      mapDriver = new MapDriver(google, '#map', { center: { lat: 51.473663, lng: -0.203287 }, zoom: 15});
       let points = [];
 
-      getNewCoordinates
+      setInterval(() => {
+        getNewCoordinates()
         .then(_.get('points'))
         .then(mapTracker.comparePoints(points))
         .then(function ({ pointsToMove, pointsToCreate, pointsToDelete }) {
           // move markers
-          pointsToMove.forEach(p => mapDriver.moveMarker(p.marker, p.position));
+          pointsToMove.forEach(p => mapDriver.moveMarker(p.marker, p.location));
 
           const newPoints = pointsToCreate.map(mapTracker.addMarker(mapDriver)) // add marker to point
           points = points.concat(newPoints);
@@ -49,7 +67,8 @@
           pointsToDelete.forEach(p => {
             points = mapTracker.withoutPoint(mapDriver, points);
           });
-         });
+        });
+      }, 1000);
     }
   );
 </script>

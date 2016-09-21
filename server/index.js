@@ -12,21 +12,24 @@ const PORT = 8080;
  * @param {int} val - Value to go around
  * @param {int} num - Number to wrap around value
  */
-const goAround = curry((val, num) => ((num % (val * 2)) > (val - 1) ? (val - num % val) : (num % val)))
+const goAround = curry((val, num) => ((num % (val * 2)) > (val - 1) ? (val - num % val) : (num % val)));
 
-// Serve static files from root
-app.use(express.static('static'));
+const createPoint = (pointInfo, trackInfo) => Object.assign(
+  {},
+  pointInfo,
+  { location: { lat: trackInfo[0], lng: trackInfo[1] } }
+);
 
 // With every request we pass different coordinates
 let reqNo = 0;
 app.get('/routes', (req, res) => {
-  const frameNo = goAround(tracks[0].length, reqNo++);
+  const frameNo = goAround(tracks[0].length - 1, reqNo++);
   const response = { points: [
-    { info: mapPoints[0], location: tracks[0][frameNo] }
+    createPoint(mapPoints[0], tracks[0][frameNo]),
   ] };
 
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   res.json(response);
 });
 

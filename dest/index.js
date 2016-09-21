@@ -101,8 +101,11 @@ const comparePoints = lodash_fp.curry((oldPoints, newPoints) => {
   // Elements in newPoints but not in oldPoints
   const pointsToCreate = newPoints.filter(p => !oldPoints.map(lodash_fp.get('id')).includes(p.id));
 
-  // Elements in both arrays.
-  const pointsToMove = oldPoints.filter(p => newPoints.map(lodash_fp.get('id')).includes(p.id));
+  // Elements of newPoints in oldPoints.
+  const pointsToMove = newPoints.filter(p => !!oldPoints.map(lodash_fp.get('id')).includes(p.id)).map(p => {
+    const oldPoint = oldPoints.find(oldP => oldP.id === p.id);
+    return Object.assign({}, oldPoint, p);
+  });
 
   return {
     pointsToMove,
