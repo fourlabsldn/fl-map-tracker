@@ -24,9 +24,9 @@ const createPoint = (pointInfo, trackInfo) => Object.assign(
 let reqNo = 0;
 app.get('/routes', (req, res) => {
   const frameNo = goAround(tracks[0].length - 1, reqNo++);
-  const response = { points: [
-    createPoint(mapPoints[0], tracks[0][frameNo]),
-  ] };
+
+  const points = mapPoints.map((point, idx) => createPoint(point, tracks[idx][frameNo]));
+  const response = { points };
 
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
