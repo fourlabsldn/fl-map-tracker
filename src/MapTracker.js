@@ -19,7 +19,15 @@ function loadPointsFromServer(url) {
     .then(get('points'));
 }
 
-export default function MapTracker({ google, mapSelector, pointsUrl, mapOptions }) {
+// All of pointOptions values must be function that will take
+// the point info as parameter.
+export default function MapTracker({
+    google,
+    mapSelector,
+    pointsUrl,
+    mapOptions,
+    pointOptions = {}, // { click, hover, infoWindow };
+  }) {
   let points = [];
   const mapDriver = new MapDriver(google, mapSelector, mapOptions);
 
@@ -27,7 +35,7 @@ export default function MapTracker({ google, mapSelector, pointsUrl, mapOptions 
     loadPointsFromServer(pointsUrl)
     .then(map(Point.of))
     .then(moveChangedPoints(mapDriver, points))
-    .then(addNewPointsToMap(mapDriver, points))
+    .then(addNewPointsToMap(mapDriver, pointOptions, points))
     .then(removeMissingPoints(mapDriver, points))
     .then(newPoints => (points = newPoints));
   }

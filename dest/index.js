@@ -6938,6 +6938,120 @@ var func$1 = convert$2('map', map_1);
 func$1.placeholder = placeholder$1;
 var map = func$1;
 
+var arrayMap$3 = _arrayMap;
+
+/**
+ * The base implementation of `_.toPairs` and `_.toPairsIn` which creates an array
+ * of key-value pairs for `object` corresponding to the property names of `props`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Array} props The property names to get values for.
+ * @returns {Object} Returns the key-value pairs.
+ */
+function baseToPairs$1(object, props) {
+  return arrayMap$3(props, function(key) {
+    return [key, object[key]];
+  });
+}
+
+var _baseToPairs = baseToPairs$1;
+
+/**
+ * Converts `set` to its value-value pairs.
+ *
+ * @private
+ * @param {Object} set The set to convert.
+ * @returns {Array} Returns the value-value pairs.
+ */
+function setToPairs$1(set) {
+  var index = -1,
+      result = Array(set.size);
+
+  set.forEach(function(value) {
+    result[++index] = [value, value];
+  });
+  return result;
+}
+
+var _setToPairs = setToPairs$1;
+
+var baseToPairs = _baseToPairs;
+var getTag$3 = _getTag;
+var mapToArray$3 = _mapToArray;
+var setToPairs = _setToPairs;
+
+/** `Object#toString` result references. */
+var mapTag$5 = '[object Map]';
+var setTag$5 = '[object Set]';
+
+/**
+ * Creates a `_.toPairs` or `_.toPairsIn` function.
+ *
+ * @private
+ * @param {Function} keysFunc The function to get the keys of a given object.
+ * @returns {Function} Returns the new pairs function.
+ */
+function createToPairs$1(keysFunc) {
+  return function(object) {
+    var tag = getTag$3(object);
+    if (tag == mapTag$5) {
+      return mapToArray$3(object);
+    }
+    if (tag == setTag$5) {
+      return setToPairs(object);
+    }
+    return baseToPairs(object, keysFunc(object));
+  };
+}
+
+var _createToPairs = createToPairs$1;
+
+var createToPairs = _createToPairs;
+var keys$7 = keys_1;
+
+/**
+ * Creates an array of own enumerable string keyed-value pairs for `object`
+ * which can be consumed by `_.fromPairs`. If `object` is a map or set, its
+ * entries are returned.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @alias entries
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the key-value pairs.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.toPairs(new Foo);
+ * // => [['a', 1], ['b', 2]] (iteration order is not guaranteed)
+ */
+var toPairs$1 = createToPairs(keys$7);
+
+var toPairs_1 = toPairs$1;
+
+var _falseOptions = {
+  'cap': false,
+  'curry': false,
+  'fixed': false,
+  'immutable': false,
+  'rearg': false
+};
+
+var convert$3 = convert_1;
+var func$2 = convert$3('toPairs', toPairs_1, _falseOptions);
+
+func$2.placeholder = placeholder$1;
+var toPairs = func$2;
+
 /**
  * This function is like `arrayIncludes` except that it accepts a comparator.
  *
@@ -6964,7 +7078,7 @@ var _arrayIncludesWith = arrayIncludesWith$1;
 var SetCache$2 = _SetCache;
 var arrayIncludes$2 = _arrayIncludes;
 var arrayIncludesWith = _arrayIncludesWith;
-var arrayMap$3 = _arrayMap;
+var arrayMap$4 = _arrayMap;
 var baseUnary$2 = _baseUnary;
 var cacheHas$2 = _cacheHas;
 
@@ -6994,7 +7108,7 @@ function baseDifference$1(array, values, iteratee, comparator) {
     return result;
   }
   if (iteratee) {
-    values = arrayMap$3(values, baseUnary$2(iteratee));
+    values = arrayMap$4(values, baseUnary$2(iteratee));
   }
   if (comparator) {
     includes = arrayIncludesWith;
@@ -7091,17 +7205,17 @@ var differenceWith$1 = baseRest$2(function(array, values) {
 
 var differenceWith_1 = differenceWith$1;
 
-var convert$3 = convert_1;
-var func$2 = convert$3('differenceWith', differenceWith_1);
-
-func$2.placeholder = placeholder$1;
-var differenceWith = func$2;
-
 var convert$4 = convert_1;
-var func$3 = convert$4('curry', curry_1);
+var func$3 = convert$4('differenceWith', differenceWith_1);
 
 func$3.placeholder = placeholder$1;
-var curry$2 = func$3;
+var differenceWith = func$3;
+
+var convert$5 = convert_1;
+var func$4 = convert$5('curry', curry_1);
+
+func$4.placeholder = placeholder$1;
+var curry$2 = func$4;
 
 function Point() {
   throw new Error('Shoud be called with `.of`');
@@ -7113,8 +7227,8 @@ Point.of = config => {
     id: config.id,
     marker: config.marker,
     location: config.location,
-    icon: config.icon
-  });
+    icon: config.icon,
+    info: Object.assign({}, config, { info: null }) });
   Object.preventExtensions(instance);
 
   return instance;
@@ -7140,20 +7254,24 @@ Point.prototype.with = curry$2(function (prop, val) {
  * @public
  * @function addMarker
  * @param {MapDriver} - mapDriver
+ * @param {Object} - pointOptions
  * @param {Point} - point
  * @return {Point} - a new point with a marker
  */
-const addMarker = curry$2((mapDriver, point) => {
-  console.log('Creating markers');
-
+const addMarker = curry$2((mapDriver, pointOptions = {}, point) => {
   const marker = mapDriver.createMarker({
     lat: point.location.lat,
     lng: point.location.lng,
     icon: point.icon,
-    optimized: false, // Info window receives a function to be called
+    optimized: false,
+    // Info window receives a function to be called
     // when marker is clicked. Should return an HTMLElement.
-    infoWindow: '<h1>Oh yeah!</h1>'
+    infoWindow: () => pointOptions.infoWindow(point.info)
   });
+
+  // Add listeners
+  // Invalid listeners will be silently ignored
+  toPairs(pointOptions).forEach(([key, val]) => marker.addListener(key, () => val(point.info)));
 
   return point.with('marker', marker);
 });
@@ -7180,17 +7298,18 @@ const removeMissingPoints = curry$2((mapDriver, oldPoints, newPoints) => {
 /**
  * @method addNewPointsToMap
  * @param  {MapDriver} mapDriver
+ * @param  {Object} pointOptions
  * @param  {Array<Point>} oldPoints
  * @param  {Array<Point>} newPoints
  * @return {Array<Point>} newPoints with added points containing markers
  */
-const addNewPointsToMap = curry$2((mapDriver, oldPoints, newPoints) => {
+const addNewPointsToMap = curry$2((mapDriver, pointOptions, oldPoints, newPoints) => {
   // points in newPoints but not in oldPoints
   const pointsToAdd = differenceWith(Point.isSame, newPoints, oldPoints);
 
   return newPoints.map(p => {
     const toBeAdded = !!pointsToAdd.find(Point.isSame(p));
-    return toBeAdded ? addMarker(mapDriver, p) : p;
+    return toBeAdded ? addMarker(mapDriver, pointOptions, p) : p;
   });
 });
 
@@ -14267,12 +14386,19 @@ function loadPointsFromServer(url) {
   return fetch(url, { mode: 'cors' }).then(r => r.json()).then(get('points'));
 }
 
-function MapTracker$1({ google, mapSelector, pointsUrl, mapOptions }) {
+// All of pointOptions values must be function that will take
+// the point info as parameter.
+function MapTracker$1({
+  google,
+  mapSelector,
+  pointsUrl,
+  mapOptions,
+  pointOptions = {} }) {
   let points = [];
   const mapDriver = new index(google, mapSelector, mapOptions);
 
   function loadPoints() {
-    loadPointsFromServer(pointsUrl).then(map(Point.of)).then(moveChangedPoints(mapDriver, points)).then(addNewPointsToMap(mapDriver, points)).then(removeMissingPoints(mapDriver, points)).then(newPoints => points = newPoints);
+    loadPointsFromServer(pointsUrl).then(map(Point.of)).then(moveChangedPoints(mapDriver, points)).then(addNewPointsToMap(mapDriver, pointOptions, points)).then(removeMissingPoints(mapDriver, points)).then(newPoints => points = newPoints);
   }
 
   function fitPoints() {

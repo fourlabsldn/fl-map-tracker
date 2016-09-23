@@ -7,15 +7,11 @@
   <!-- RequireJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js"></script>
   <script type="text/javascript">
-    requirejs.config({
-      baseUrl: './',
-      paths: {
-        'fl-map-tracker': '../dest/index'
-      },
-    });
+    requirejs.config({ baseUrl: './', paths: { 'fl-map-tracker': '../dest/index' } });
   </script>
 </head>
 <body>
+
   <h1>Golden Eagle Tracking</h1>
   <button id="focusMarkersBtn">Focus markers</button>
   <div id="map"></div>
@@ -30,6 +26,12 @@
         mapOptions: {
           zoom: 15,
           center: { lat: 51.474142, lng: -0.205402 },
+        },
+        pointOptions: {
+          // Check supported events at https://developers.google.com/maps/documentation/javascript/events
+          mouseover: console.log,
+          // This shoud be a string or a function that returns a string
+          infoWindow: info => `<h2>${info.name}</h2>`
         }
       });
 

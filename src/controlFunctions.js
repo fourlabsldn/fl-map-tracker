@@ -1,24 +1,28 @@
-import { curry, differenceWith } from 'lodash/fp';
+import { curry, differenceWith, toPairs } from 'lodash/fp';
 import Point from './Point';
 
 /**
  * @public
  * @function addMarker
  * @param {MapDriver} - mapDriver
+ * @param {Object} - pointOptions
  * @param {Point} - point
  * @return {Point} - a new point with a marker
  */
-const addMarker = curry((mapDriver, point) => {
-  console.log('Creating markers');
-
+const addMarker = curry((mapDriver, pointOptions = {}, point) => {
   const marker = mapDriver.createMarker({
     lat: point.location.lat,
     lng: point.location.lng,
     icon: point.icon,
-    optimized: false,        // Info window receives a function to be called
+    optimized: false,
+    // Info window receives a function to be called
     // when marker is clicked. Should return an HTMLElement.
-    infoWindow: '<h1>Oh yeah!</h1>',
+    infoWindow: () => pointOptions.infoWindow(point.info),
   });
+
+  // Add listeners
+  // Invalid listeners will be silently ignored
+  toPairs(pointOptions).forEach(([key, val]) => marker.addListener(key, () => val(point.info)));
 
   return point.with('marker', marker);
 });
@@ -45,17 +49,18 @@ const removeMissingPoints = curry((mapDriver, oldPoints, newPoints) => {
 /**
  * @method addNewPointsToMap
  * @param  {MapDriver} mapDriver
+ * @param  {Object} pointOptions
  * @param  {Array<Point>} oldPoints
  * @param  {Array<Point>} newPoints
  * @return {Array<Point>} newPoints with added points containing markers
  */
-const addNewPointsToMap = curry((mapDriver, oldPoints, newPoints) => {
+const addNewPointsToMap = curry((mapDriver, pointOptions, oldPoints, newPoints) => {
   // points in newPoints but not in oldPoints
   const pointsToAdd = differenceWith(Point.isSame, newPoints, oldPoints);
 
   return newPoints.map(p => {
     const toBeAdded = !!pointsToAdd.find(Point.isSame(p));
-    return toBeAdded ? addMarker(mapDriver, p) : p;
+    return toBeAdded ? addMarker(mapDriver, pointOptions, p) : p;
   });
 });
 

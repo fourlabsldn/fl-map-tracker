@@ -9,6 +9,7 @@ Point.of = config => {
     marker: config.marker,
     location: config.location,
     icon: config.icon,
+    info: Object.assign({}, config, { info: null }), // Avoid circular references with info
   });
   Object.preventExtensions(instance);
 
