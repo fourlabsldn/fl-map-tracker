@@ -29,12 +29,11 @@ export default function MapTracker({ google, mapSelector, pointsUrl, mapOptions 
     .then(moveChangedPoints(mapDriver, points))
     .then(addNewPointsToMap(mapDriver, points))
     .then(removeMissingPoints(mapDriver, points))
-    .then(p => console.log(p) || p)
     .then(newPoints => (points = newPoints));
   }
 
   function fitPoints() {
-
+    mapDriver.focusMarkers(mapDriver.getMarkers());
   }
 
   return { loadPoints, fitPoints };

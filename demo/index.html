@@ -17,6 +17,7 @@
 </head>
 <body>
   <h1>Golden Eagle Tracking</h1>
+  <button id="focusMarkersBtn">Focus markers</button>
   <div id="map"></div>
 
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKdTnpxORlxfcVsuASHCeozz1CCMLM0u4"></script>
@@ -26,12 +27,16 @@
         google: google,
         mapSelector: '#map',
         pointsUrl: 'http://localhost:8080/routes',
-        mapOptions: {}
+        mapOptions: {
+          zoom: 15,
+          center: { lat: 51.474142, lng: -0.205402 },
+        }
       });
 
       tracker.loadPoints();
-
       setInterval(tracker.loadPoints, 2000);
+
+      document.querySelector('#focusMarkersBtn').addEventListener('click', tracker.fitPoints);
     });
   </script>
 </body>

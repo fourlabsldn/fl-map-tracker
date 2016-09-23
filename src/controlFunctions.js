@@ -9,6 +9,8 @@ import Point from './Point';
  * @return {Point} - a new point with a marker
  */
 const addMarker = curry((mapDriver, point) => {
+  console.log('Creating markers');
+
   const marker = mapDriver.createMarker({
     lat: point.location.lat,
     lng: point.location.lng,
@@ -52,7 +54,7 @@ const addNewPointsToMap = curry((mapDriver, oldPoints, newPoints) => {
   const pointsToAdd = differenceWith(Point.isSame, newPoints, oldPoints);
 
   return newPoints.map(p => {
-    const toBeAdded = !pointsToAdd.find(Point.isSame(p));
+    const toBeAdded = !!pointsToAdd.find(Point.isSame(p));
     return toBeAdded ? addMarker(mapDriver, p) : p;
   });
 });

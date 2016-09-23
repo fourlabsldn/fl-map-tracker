@@ -7122,7 +7122,7 @@ Point.of = config => {
 
 Point.isSame = curry$2(function (p1, p2) {
   // eslint-disable-line prefer-arrow-callback
-  p1.isSame(p2);
+  return p1.isSame(p2);
 });
 
 Point.prototype.isSame = function (point) {
@@ -7144,6 +7144,8 @@ Point.prototype.with = curry$2(function (prop, val) {
  * @return {Point} - a new point with a marker
  */
 const addMarker = curry$2((mapDriver, point) => {
+  console.log('Creating markers');
+
   const marker = mapDriver.createMarker({
     lat: point.location.lat,
     lng: point.location.lng,
@@ -7187,7 +7189,7 @@ const addNewPointsToMap = curry$2((mapDriver, oldPoints, newPoints) => {
   const pointsToAdd = differenceWith(Point.isSame, newPoints, oldPoints);
 
   return newPoints.map(p => {
-    const toBeAdded = !pointsToAdd.find(Point.isSame(p));
+    const toBeAdded = !!pointsToAdd.find(Point.isSame(p));
     return toBeAdded ? addMarker(mapDriver, p) : p;
   });
 });
@@ -14270,10 +14272,12 @@ function MapTracker$1({ google, mapSelector, pointsUrl, mapOptions }) {
   const mapDriver = new index(google, mapSelector, mapOptions);
 
   function loadPoints() {
-    loadPointsFromServer(pointsUrl).then(map(Point.of)).then(moveChangedPoints(mapDriver, points)).then(addNewPointsToMap(mapDriver, points)).then(removeMissingPoints(mapDriver, points)).then(p => console.log(p) || p).then(newPoints => points = newPoints);
+    loadPointsFromServer(pointsUrl).then(map(Point.of)).then(moveChangedPoints(mapDriver, points)).then(addNewPointsToMap(mapDriver, points)).then(removeMissingPoints(mapDriver, points)).then(newPoints => points = newPoints);
   }
 
-  function fitPoints() {}
+  function fitPoints() {
+    mapDriver.focusMarkers(mapDriver.getMarkers());
+  }
 
   return { loadPoints, fitPoints };
 }

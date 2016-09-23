@@ -16,7 +16,7 @@ Point.of = config => {
 };
 
 Point.isSame = curry(function (p1, p2) { // eslint-disable-line prefer-arrow-callback
-  p1.isSame(p2);
+  return p1.isSame(p2);
 });
 
 Point.prototype.isSame = function (point) { // eslint-disable-line prefer-arrow-callback
