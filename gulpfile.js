@@ -10,7 +10,10 @@ organiser.registerAll('./tasks', {
     src: path.join(srcRoot, 'index.js'),
     dest: destRoot,
     watch: srcRoot,
-    config: { format: 'umd', moduleName: 'flMaps', external: ['lodash/fp'] },
+    config: {
+      moduleName: 'MapTracker',
+      // external: ['lodash/fp'],
+    },
   },
 
   'browser-sync': {
