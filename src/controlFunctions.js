@@ -34,11 +34,11 @@ const removeMarker = curry((mapDriver, point) => {
  * @param  {Array<Points>} newPoints
  * @return {Array<Points>} Returns newPoints
  */
-function removeMissingPoints(mapDriver, oldPoints, newPoints) {
+const removeMissingPoints = curry((mapDriver, oldPoints, newPoints) => {
   // points in oldPoints but not in newPoints
   differenceWith(Point.isSame, oldPoints, newPoints).map(removeMarker(mapDriver));
   return newPoints;
-}
+});
 
 /**
  * @method addNewPointsToMap
@@ -47,15 +47,15 @@ function removeMissingPoints(mapDriver, oldPoints, newPoints) {
  * @param  {Array<Point>} newPoints
  * @return {Array<Point>} newPoints with added points containing markers
  */
-function addNewPointsToMap(mapDriver, oldPoints, newPoints) {
+const addNewPointsToMap = curry((mapDriver, oldPoints, newPoints) => {
   // points in newPoints but not in oldPoints
   const pointsToAdd = differenceWith(Point.isSame, newPoints, oldPoints);
 
   return newPoints.map(p => {
-    const toBeAdded = !!pointsToAdd.find(Point.isSame(p));
+    const toBeAdded = !pointsToAdd.find(Point.isSame(p));
     return toBeAdded ? addMarker(mapDriver, p) : p;
   });
-}
+});
 
 /**
  * @method moveChangedPoints
@@ -64,7 +64,7 @@ function addNewPointsToMap(mapDriver, oldPoints, newPoints) {
  * @param  {Array<Point>} newPoints
  * @return {Array<Point>} newPoints with references to moved markers
  */
-function moveChangedPoints(mapDriver, oldPoints, newPoints) {
+const moveChangedPoints = curry((mapDriver, oldPoints, newPoints) => {
   const newPointsWithMarkers = newPoints.map(p => {
     const oldEquivalent = oldPoints.find(Point.isSame(p));
     return oldEquivalent ? p.with('marker', oldEquivalent.marker) : p;
@@ -72,7 +72,7 @@ function moveChangedPoints(mapDriver, oldPoints, newPoints) {
 
   newPointsWithMarkers.forEach(p => (p.marker ? mapDriver.moveMarker(p.marker, p.location) : null));
   return newPointsWithMarkers;
-}
+});
 
 export {
   removeMissingPoints,
